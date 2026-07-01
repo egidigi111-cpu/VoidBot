@@ -11,7 +11,7 @@ module.exports = {
     if (!channel) return;
 
     channel.send(
-      `<@${newState.member.id}> ist im **Support Warteraum**.`
+      `<@&1521188633271341137> <@${newState.member.id}> ist im **Support Warteraum**.`
     );
   },
 };
