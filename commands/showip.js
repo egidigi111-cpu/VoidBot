@@ -9,8 +9,9 @@ module.exports = {
       return interaction.reply({ content: '❌ Nur Admins können diesen Befehl nutzen.', ephemeral: true });
     }
 
-    await interaction.reply(
+    await interaction.channel.send(
       'Server IP: VoidAttack.hostmc.de\nServer Port: 40163'
     );
+    await interaction.reply({ content: '✅ IP wurde angezeigt!', ephemeral: true });
   },
 };
