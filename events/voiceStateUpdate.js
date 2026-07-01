@@ -1,11 +1,8 @@
-const config = require('../config');
-
 module.exports = {
   name: 'voiceStateUpdate',
   execute(oldState, newState) {
-    const waitingRoomId = config.waitingRoomChannelId;
-    const logChannelId = config.waitingLogChannelId;
-    if (!waitingRoomId || !logChannelId) return;
+    const waitingRoomId = '1435701364624719873';
+    const logChannelId = '1436704580284055622';
 
     const joined = newState.channelId === waitingRoomId && oldState.channelId !== waitingRoomId;
     if (!joined) return;
@@ -14,8 +11,7 @@ module.exports = {
     if (!channel) return;
 
     channel.send(
-      `<@&${config.staffRoleId}> Jemand ist im **Support Warteraum**!\n` +
-      `<@${newState.member.id}> wartet auf Hilfe.`
+      `<@${newState.member.id}> ist im **Support Warteraum**.`
     );
   },
 };
