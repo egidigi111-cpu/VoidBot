@@ -28,15 +28,33 @@ module.exports = {
     const choice = interaction.options.getString('status');
     const cfg = config[choice];
 
-    fs.writeFileSync(statusFile, JSON.stringify({ status: choice }));
+    let messageId, channelId;
+    try {
+      const data = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+      messageId = data.messageId;
+      channelId = data.channelId;
+    } catch {}
 
-    const embed = new EmbedBuilder()
-      .setTitle('ℹ️ Server Status geändert')
-      .setDescription(`Der Server-Status wurde auf **${cfg.emoji} ${cfg.label}** geändert`)
-      .setColor(cfg.color)
-      .setTimestamp();
+    if (messageId && channelId) {
+      const channel = interaction.client.channels.cache.get(channelId);
+      if (channel) {
+        try {
+          const msg = await channel.messages.fetch(messageId);
+          const embed = EmbedBuilder.from(msg.embeds[0])
+            .setDescription(`**${cfg.emoji} ${cfg.label}**`)
+            .setColor(cfg.color)
+            .setTimestamp();
+          await msg.edit({ embeds: [embed] });
+        } catch {}
+      }
+    }
 
-    await interaction.channel.send({ embeds: [embed] });
-    await interaction.reply({ content: '✅ Status wurde geändert!', ephemeral: true });
+    fs.writeFileSync(statusFile, JSON.stringify({
+      status: choice,
+      messageId,
+      channelId,
+    }));
+
+    await interaction.reply({ content: `✅ Status auf **${cfg.emoji} ${cfg.label}** geändert!`, ephemeral: true });
   },
 };

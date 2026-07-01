@@ -34,7 +34,13 @@ module.exports = {
       .setFooter({ text: 'VoidAttack' })
       .setTimestamp();
 
-    await interaction.channel.send({ embeds: [embed] });
+    const msg = await interaction.channel.send({ embeds: [embed] });
     await interaction.reply({ content: '✅ Status wurde angezeigt!', ephemeral: true });
+
+    fs.writeFileSync(statusFile, JSON.stringify({
+      status: current,
+      messageId: msg.id,
+      channelId: msg.channel.id,
+    }));
   },
 };
