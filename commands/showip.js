@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,15 +9,8 @@ module.exports = {
       return interaction.reply({ content: '❌ Nur Admins können diesen Befehl nutzen.', ephemeral: true });
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle('🌐 VoidAttack Server')
-      .setColor(0x5865F2)
-      .addFields(
-        { name: 'Server IP', value: 'VoidAttack.hostmc.de', inline: false },
-        { name: 'Server Port', value: '40163', inline: false },
-      )
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed] });
+    await interaction.reply(
+      'Server IP: VoidAttack.hostmc.de\nServer Port: 40163'
+    );
   },
 };
