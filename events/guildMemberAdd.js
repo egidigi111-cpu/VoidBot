@@ -4,6 +4,9 @@ const config = require('../config');
 module.exports = {
   name: 'guildMemberAdd',
   execute(member) {
+    const role = member.guild.roles.cache.get('1435310605841072189');
+    if (role) member.roles.add(role);
+
     const channel = member.guild.channels.cache.get(config.welcomeChannelId);
     if (!channel) return;
 
