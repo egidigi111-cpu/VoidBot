@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const config = require('../config');
+const configManager = require('../utils/configManager');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,6 +8,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction) {
     const channel = interaction.channel;
+    const config = configManager.getAll();
 
     if (!channel.name.startsWith('ticket-') || channel.name.startsWith('ticket-closed-')) {
       return interaction.reply({ content: '❌ Das ist kein offenes Ticket.', ephemeral: true });
