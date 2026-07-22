@@ -1,6 +1,12 @@
 const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+
+// Config laden (Railway-kompatibel)
+if (!process.env.DISCORD_TOKEN) {
+  require('dotenv').config();
+}
+
 const config = require('./config');
 
 const commands = [];

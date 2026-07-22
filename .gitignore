@@ -1,2 +1,4 @@
 node_modules/
 .env
+data/leveling.json
+data/counting.json

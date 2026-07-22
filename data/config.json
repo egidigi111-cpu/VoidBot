@@ -1,0 +1,16 @@
+{
+  "welcomeChannelId": "1436453195097313383",
+  "leaveChannelId": "1529324782519189664",
+  "ticketCategoryId": "1521855295431774408",
+  "closedCategoryId": "1521856953888804934",
+  "staffRoleId": "1521855579268583484",
+  "autoRoleId": "1435310605841072189",
+  "logChannelId": "1436704580284055622",
+  "countingChannelId": "1529324352946835456",
+  "countingLastNumber": 9,
+  "levelingEnabled": true,
+  "linkProtectionEnabled": false,
+  "tempVoiceChannelId": null,
+  "badWords": [],
+  "tags": {}
+}

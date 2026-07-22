@@ -1,17 +1,70 @@
+const { PermissionFlagsBits } = require('discord.js');
+const configManager = require('../utils/configManager');
+
 module.exports = {
   name: 'voiceStateUpdate',
-  execute(oldState, newState) {
-    const waitingRoomId = '1435701364624719873';
-    const logChannelId = '1436704580284055622';
+  async execute(oldState, newState) {
+    const config = configManager.getAll();
 
-    const joined = newState.channelId === waitingRoomId && oldState.channelId !== waitingRoomId;
-    if (!joined) return;
+    // ── Support Warteraum Benachrichtigung ────────────────
+    const waitingRoomId = config.waitingRoomChannelId;
+    if (waitingRoomId) {
+      const joined = newState.channelId === waitingRoomId && oldState.channelId !== waitingRoomId;
+      if (joined) {
+        const logChannelId = config.waitingLogChannelId;
+        if (logChannelId) {
+          const channel = newState.guild.channels.cache.get(logChannelId);
+          if (channel) {
+            await channel.send(
+              `<@&${config.staffRoleId}> <@${newState.member.id}> ist im **Support Warteraum**.`
+            );
+          }
+        }
+      }
+    }
 
-    const channel = newState.guild.channels.cache.get(logChannelId);
-    if (!channel) return;
+    // ── Temporäre Voice Channels ────────────────
+    const tempVoiceHubId = config.tempVoiceChannelId;
+    if (!tempVoiceHubId) return;
 
-    channel.send(
-      `<@&1521188633271341137> <@${newState.member.id}> ist im **Support Warteraum**.`
-    );
+    // User betritt den Hub-Kanal → Temporären Channel erstellen
+    if (newState.channelId === tempVoiceHubId && oldState.channelId !== tempVoiceHubId) {
+      try {
+        const tempChannel = await newState.guild.channels.create({
+          name: `🔊 ${newState.member.user.username}`,
+          type: 2, // GUILD_VOICE
+          parent: newState.channel.parent,
+          permissionOverwrites: [
+            {
+              id: newState.member.id,
+              allow: [
+                PermissionFlagsBits.ViewChannel,
+                PermissionFlagsBits.Connect,
+                PermissionFlagsBits.Speak,
+                PermissionFlagsBits.ManageChannels,
+              ],
+            },
+            {
+              id: newState.guild.id,
+              allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
+            },
+          ],
+        });
+
+        await newState.setChannel(tempChannel);
+      } catch (error) {
+        console.error('Temp Voice Fehler:', error);
+      }
+    }
+
+    // Temporärer Channel verlassen → Löschen wenn leer
+    if (oldState.channel && oldState.channel !== newState.channel) {
+      const channel = oldState.channel;
+      if (channel.name.startsWith('🔊 ') && channel.members.size === 0) {
+        try {
+          await channel.delete();
+        } catch {}
+      }
+    }
   },
 };

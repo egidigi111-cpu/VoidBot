@@ -1,5 +1,4 @@
-require('dotenv').config();
-
+// Config wird aus process.env (Railway) oder .env (lokal) geladen
 module.exports = {
   token: process.env.DISCORD_TOKEN,
   clientId: process.env.CLIENT_ID,

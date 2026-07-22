@@ -1,12 +1,47 @@
 const { EmbedBuilder } = require('discord.js');
-const config = require('../config');
+const configManager = require('../utils/configManager');
+const inviteTracker = require('../commands/invites');
 
 module.exports = {
   name: 'guildMemberAdd',
-  execute(member) {
-    const role = member.guild.roles.cache.get('1435310605841072189');
-    if (role) member.roles.add(role);
+  async execute(member) {
+    const config = configManager.getAll();
 
+    // ── Auto-Role zuweisen ────────────────
+    if (config.autoRoleId) {
+      try {
+        const role = member.guild.roles.cache.get(config.autoRoleId);
+        if (role) {
+          await member.roles.add(role);
+        }
+      } catch (error) {
+        console.error('Auto-Role Fehler:', error);
+      }
+    }
+
+    // ── Invite tracken ────────────────
+    try {
+      const existingInvites = member.guild.invites.cache;
+      const newInvites = await member.guild.fetchInvites();
+
+      let usedInvite = null;
+
+      for (const [code, newInvite] of newInvites) {
+        const existingInvite = existingInvites.get(code);
+        if (existingInvite && newInvite.uses > existingInvite.uses) {
+          usedInvite = newInvite;
+          break;
+        }
+      }
+
+      if (usedInvite && usedInvite.inviter) {
+        inviteTracker.addInvite(usedInvite.inviter.id, member.id);
+      }
+    } catch (error) {
+      console.error('Invite-Tracking Fehler:', error);
+    }
+
+    // ── Willkommensnachricht ────────────────
     const channel = member.guild.channels.cache.get(config.welcomeChannelId);
     if (!channel) return;
 
@@ -21,6 +56,6 @@ module.exports = {
       .setFooter({ text: `Mitglied #${member.guild.memberCount}` })
       .setTimestamp();
 
-    channel.send({ embeds: [embed] });
+    await channel.send({ embeds: [embed] });
   },
 };

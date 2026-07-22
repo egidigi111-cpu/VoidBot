@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const giveawayCmd = require('../commands/giveaway');
-const config = require('../config');
+const configManager = require('../utils/configManager');
+const leveling = require('../utils/leveling');
 
 const ticketLabels = {
   bewerbung: { name: '📋 Bewerbung', color: 0x5865F2 },
@@ -31,8 +32,8 @@ module.exports = {
       const category = interaction.values[0];
       const user = interaction.user;
       const guild = interaction.guild;
+      const config = configManager.getAll();
 
-      // Prüfen ob User schon ein offenes Ticket hat (kanalübergreifend)
       const existing = guild.channels.cache.find(
         c => c.parentId === config.ticketCategoryId && c.name.startsWith('ticket-') && c.permissionOverwrites.cache.has(user.id)
       );
@@ -110,6 +111,7 @@ module.exports = {
     // ── Button (Ticket schließen) ──────
     if (interaction.isButton() && interaction.customId === 'ticket_close') {
       const channel = interaction.channel;
+      const config = configManager.getAll();
 
       if (!channel.name.startsWith('ticket-') || channel.name.startsWith('ticket-closed-')) {
         return interaction.reply({ content: '❌ Das ist kein offenes Ticket.', ephemeral: true });
@@ -176,6 +178,88 @@ module.exports = {
 
       await msg.edit({ embeds: [embed] });
       return;
+    }
+  },
+
+  // ── Message-basierte Features ────────────────
+  async handleMessage(message) {
+    if (message.author.bot) return;
+    if (!message.guild) return;
+
+    const config = configManager.getAll();
+
+    // ── Tags ────────────────
+    if (message.content.startsWith('!')) {
+      const tagName = message.content.slice(1).toLowerCase().trim();
+      if (config.tags && config.tags[tagName]) {
+        await message.reply(config.tags[tagName]);
+        return;
+      }
+    }
+
+    // ── Bad Words Filter ────────────────
+    if (config.badWords && config.badWords.length > 0) {
+      const msgLower = message.content.toLowerCase();
+      for (const word of config.badWords) {
+        if (msgLower.includes(word)) {
+          try {
+            await message.delete();
+            await message.channel.send({
+              content: `🚫 <@${message.author.id}>, diese Nachricht enthält verbotene Wörter und wurde gelöscht.`,
+            });
+          } catch {}
+          return;
+        }
+      }
+    }
+
+    // ── Link Protection ────────────────
+    if (config.linkProtectionEnabled) {
+      const linkRegex = /https?:\/\/[^\s]+|discord\.gg\/[^\s]+|discordapp\.com\/invite\/[^\s]+/i;
+      if (linkRegex.test(message.content)) {
+        const hasPermission = message.member.permissions.has(PermissionFlagsBits.ManageMessages);
+        if (!hasPermission) {
+          try {
+            await message.delete();
+            await message.channel.send({
+              content: `🚫 <@${message.author.id}>, Links und Einladungen sind hier nicht erlaubt.`,
+            });
+          } catch {}
+          return;
+        }
+      }
+    }
+
+    // ── Counting Game ────────────────
+    if (config.countingChannelId && message.channel.id === config.countingChannelId) {
+      const num = parseInt(message.content.trim());
+      if (!isNaN(num)) {
+        const lastNumber = config.countingLastNumber || 0;
+        const expected = lastNumber + 1;
+
+        if (num === expected) {
+          config.countingLastNumber = num;
+          configManager.writeConfig(config);
+        } else {
+          try {
+            await message.delete();
+            await message.channel.send({
+              content: `❌ Falsch! Die nächste Zahl wäre **${expected}** gewesen.`,
+            });
+          } catch {}
+        }
+        return;
+      }
+    }
+
+    // ── Leveling ────────────────
+    if (config.levelingEnabled) {
+      const result = leveling.addXP(message.author.id);
+      if (result.leveledUp) {
+        await message.channel.send({
+          content: `🎉 <@${message.author.id}> ist jetzt **Level ${result.level}**!`,
+        });
+      }
     }
   },
 };
