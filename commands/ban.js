@@ -15,7 +15,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
   async execute(interaction) {
     const user = interaction.options.getUser('user');
-    const member = interaction.options.getMember('user');
+    const member = await interaction.guild.members.fetch(user.id).catch(() => null);
     const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
     if (member && !member.bannable) {

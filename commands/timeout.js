@@ -20,21 +20,22 @@ module.exports = {
         .setRequired(false))
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
   async execute(interaction) {
-    const user = interaction.options.getMember('user');
+    const targetUser = interaction.options.getUser('user');
+    const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
     const dauer = interaction.options.getInteger('dauer');
     const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
-    if (!user) {
+    if (!member) {
       return interaction.reply({ content: '❌ User nicht gefunden.', ephemeral: true });
     }
 
-    if (!user.moderatable) {
+    if (!member.moderatable) {
       return interaction.reply({ content: '❌ Ich kann diesen User nicht timenouten.', ephemeral: true });
     }
 
     try {
-      await user.timeout(dauer * 60 * 1000, grund);
-      await interaction.reply({ content: `✅ **${user.user.tag}** wurde für **${dauer} Minuten** getimeoutet.\n📄 Grund: ${grund}`, ephemeral: true });
+      await member.timeout(dauer * 60 * 1000, grund);
+      await interaction.reply({ content: `✅ **${targetUser.tag}** wurde für **${dauer} Minuten** getimeoutet.\n📄 Grund: ${grund}`, ephemeral: true });
     } catch (error) {
       await interaction.reply({ content: `❌ Fehler beim Timeout: ${error.message}`, ephemeral: true });
     }

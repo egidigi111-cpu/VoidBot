@@ -14,20 +14,21 @@ module.exports = {
         .setRequired(false))
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
   async execute(interaction) {
-    const user = interaction.options.getMember('user');
+    const targetUser = interaction.options.getUser('user');
+    const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
     const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
-    if (!user) {
+    if (!member) {
       return interaction.reply({ content: '❌ User nicht gefunden.', ephemeral: true });
     }
 
-    if (!user.kickable) {
+    if (!member.kickable) {
       return interaction.reply({ content: '❌ Ich kann diesen User nicht kicken.', ephemeral: true });
     }
 
     try {
-      await user.kick(grund);
-      await interaction.reply({ content: `✅ **${user.user.tag}** wurde gekickt.\n📄 Grund: ${grund}`, ephemeral: true });
+      await member.kick(grund);
+      await interaction.reply({ content: `✅ **${targetUser.tag}** wurde gekickt.\n📄 Grund: ${grund}`, ephemeral: true });
     } catch (error) {
       await interaction.reply({ content: `❌ Fehler beim Kicken: ${error.message}`, ephemeral: true });
     }
