@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -58,6 +58,30 @@ for (const file of eventFiles) {
 // ── Message Handler (für Tags, Bad Words, Counting, Leveling) ────────────────
 client.on('messageCreate', (message) => {
   interactionHandler.handleMessage(message);
+});
+
+// ── Commands registrieren beim Start ────────────────
+client.once('ready', async () => {
+  console.log(`✅ Eingeloggt als ${client.user.tag}`);
+
+  if (!config.clientId || !config.guildId) {
+    console.log('⚠️ CLIENT_ID oder GUILD_ID fehlt – Commands werden nicht registriert.');
+    return;
+  }
+
+  try {
+    const commands = client.commands.map(cmd => cmd.data.toJSON());
+    const rest = new REST({ version: '10' }).setToken(config.token);
+
+    console.log(`📝 Registriere ${commands.length} Commands...`);
+    await rest.put(
+      Routes.applicationGuildCommands(config.clientId, config.guildId),
+      { body: commands },
+    );
+    console.log(`✅ ${commands.length} Commands erfolgreich registriert!`);
+  } catch (error) {
+    console.error('❌ Fehler beim Registrieren der Commands:', error.message);
+  }
 });
 
 client.login(config.token);
