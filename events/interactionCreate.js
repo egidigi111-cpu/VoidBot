@@ -58,11 +58,20 @@ module.exports = {
           },
         ];
 
+        let validStaffRoleId = null;
         if (config.staffRoleId) {
-          overwrites.push({
-            id: config.staffRoleId,
-            allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
-          });
+          try {
+            const role = await guild.roles.fetch(config.staffRoleId);
+            if (role) {
+              validStaffRoleId = role.id;
+              overwrites.push({
+                id: role.id,
+                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+              });
+            }
+          } catch {
+            console.warn('⚠️ Staff-Rolle nicht gefunden:', config.staffRoleId);
+          }
         }
 
         const ticketChannel = await guild.channels.create({
@@ -93,7 +102,7 @@ module.exports = {
             .setStyle(ButtonStyle.Danger),
         );
 
-        const mention = config.staffRoleId ? `<@${user.id}> <@&${config.staffRoleId}>` : `<@${user.id}>`;
+        const mention = validStaffRoleId ? `<@${user.id}> <@&${validStaffRoleId}>` : `<@${user.id}>`;
         await ticketChannel.send({ content: mention, embeds: [embed], components: [buttons] });
 
         await interaction.editReply({
@@ -126,9 +135,17 @@ module.exports = {
         },
       ];
 
+      let validStaffRoleId = null;
       if (config.staffRoleId) {
+        try {
+          const role = await interaction.guild.roles.fetch(config.staffRoleId);
+          if (role) validStaffRoleId = role.id;
+        } catch {}
+      }
+
+      if (validStaffRoleId) {
         overwrites.push({
-          id: config.staffRoleId,
+          id: validStaffRoleId,
           allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory],
         });
       }
