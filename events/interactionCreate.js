@@ -212,10 +212,10 @@ module.exports = {
         await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
         const banEmbed = new EmbedBuilder()
           .setColor(0x2F3136)
-          .setTitle('BANNED — ANTI-BOT PROTECTION')
+          .setTitle('BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ')
           .setDescription(
-            `${message.author.tag} has been banned.\n` +
-            `Reason: Message in honeypot channel.`
+            `${message.author.tag} has been banned. / ${message.author.tag} wurde gebannt.\n` +
+            `Reason: Message in honeypot channel. / Grund: Nachricht im Sperrkanal.`
           )
           .setFooter({ text: 'VoidAttack · Anti-Bot System' })
           .setTimestamp();
