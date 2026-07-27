@@ -4,10 +4,10 @@ const configManager = require('../utils/configManager');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('antibot')
-    .setDescription('Richtet einen Anti-Bot-Fang-Kanal ein')
+    .setDescription('Sets up an anti-bot honeypot channel')
     .addChannelOption(option =>
       option.setName('channel')
-        .setDescription('Der Kanal, in dem Bots gefangen werden sollen')
+        .setDescription('The channel to catch spam bots')
         .setRequired(true)
         .addChannelTypes(ChannelType.GuildText))
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
@@ -17,26 +17,19 @@ module.exports = {
     configManager.set('antibotChannelId', channel.id);
 
     const embed = new EmbedBuilder()
-      .setColor(0xED4245)
-      .setTitle('⛔ ZUTRITT VERBOTEN ⛔')
+      .setColor(0x2F3136)
+      .setTitle('⚠️ DO NOT SEND MESSAGES IN THIS CHANNEL')
       .setDescription(
-        '**Sende KEINE Nachrichten in diesem Kanal!**\n\n' +
-        'Dieser Kanal dient ausschließlich zum **Auffangen von Spam-Bots**. ' +
-        'Jede Nachricht, die hier gesendet wird, führt automatisch zu einem **softban**.\n\n' +
-        '───────────────────────\n' +
-        '⚠️ *Bei Verstoß wirst du umgehend gebannt.*\n' +
-        '───────────────────────'
+        'This channel is used to catch spam bots.\n' +
+        'Any messages sent here will result in an **automatic ban**.'
       )
-      .setThumbnail('https://i.imgur.com/G2VfO6h.png')
       .setFooter({ text: 'VoidAttack · Anti-Bot System' })
       .setTimestamp();
 
-    const dangerIcon = '🚨';
-
-    await channel.send({ content: dangerIcon, embeds: [embed] });
+    await channel.send({ embeds: [embed] });
 
     await interaction.reply({
-      content: `✅ Anti-Bot-Kanal wurde auf ${channel} gesetzt. Eine Warnnachricht wurde gesendet.`,
+      content: `✅ Anti-bot channel set to ${channel}. Warning message sent.`,
       ephemeral: true,
     });
   },
