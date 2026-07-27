@@ -224,19 +224,23 @@ module.exports = {
           }
         }
 
-        if (action !== 'failed') {
-          const banEmbed = new EmbedBuilder()
+        if (action !== 'failed' && config.antibotLogChannelId) {
+          const logEmbed = new EmbedBuilder()
             .setColor(0x2F3136)
             .setTitle(action === 'banned'
               ? 'BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ'
               : 'KICKED — ANTI-BOT PROTECTION / GEKICKT — ANTI-BOT-SCHUTZ')
             .setDescription(
-              `${message.author.tag} has been ${action}. / ${message.author.tag} wurde ${action === 'banned' ? 'gebannt' : 'gekickt'}.\n` +
+              `${message.author.tag} (${message.author.id}) has been ${action}. / ${message.author.tag} wurde ${action === 'banned' ? 'gebannt' : 'gekickt'}.\n` +
               `Reason: Message in honeypot channel. / Grund: Nachricht im Sperrkanal.`
             )
             .setFooter({ text: 'VoidAttack · Anti-Bot System' })
             .setTimestamp();
-          await message.channel.send({ embeds: [banEmbed] });
+
+          const logChannel = message.guild.channels.cache.get(config.antibotLogChannelId);
+          if (logChannel) {
+            await logChannel.send({ embeds: [logEmbed] });
+          }
         }
       } catch {}
       return;
