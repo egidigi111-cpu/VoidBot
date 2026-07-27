@@ -9,7 +9,7 @@ module.exports = {
       opt.setName('channel')
         .setDescription('The log channel')
         .setRequired(true)
-        .addChannelTypes(ChannelType.GuildText)))
+        .addChannelTypes(ChannelType.GuildText))
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   async execute(interaction) {
     const channel = interaction.options.getChannel('channel');
