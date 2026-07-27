@@ -213,23 +213,31 @@ module.exports = {
         let action = 'banned';
         try {
           await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
-        } catch {
-          await message.member.kick('Anti-Bot: Nachricht im Sperrkanal gesendet');
-          action = 'kicked';
+        } catch (banErr) {
+          console.error('Anti-Bot Ban fehlgeschlagen:', banErr.message);
+          try {
+            await message.member.kick('Anti-Bot: Nachricht im Sperrkanal gesendet');
+            action = 'kicked';
+          } catch (kickErr) {
+            console.error('Anti-Bot Kick fehlgeschlagen:', kickErr.message);
+            action = 'failed';
+          }
         }
 
-        const banEmbed = new EmbedBuilder()
-          .setColor(0x2F3136)
-          .setTitle(action === 'banned'
-            ? 'BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ'
-            : 'KICKED — ANTI-BOT PROTECTION / GEKICKT — ANTI-BOT-SCHUTZ')
-          .setDescription(
-            `${message.author.tag} has been ${action}. / ${message.author.tag} wurde ${action === 'banned' ? 'gebannt' : 'gekickt'}.\n` +
-            `Reason: Message in honeypot channel. / Grund: Nachricht im Sperrkanal.`
-          )
-          .setFooter({ text: 'VoidAttack · Anti-Bot System' })
-          .setTimestamp();
-        await message.channel.send({ embeds: [banEmbed] });
+        if (action !== 'failed') {
+          const banEmbed = new EmbedBuilder()
+            .setColor(0x2F3136)
+            .setTitle(action === 'banned'
+              ? 'BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ'
+              : 'KICKED — ANTI-BOT PROTECTION / GEKICKT — ANTI-BOT-SCHUTZ')
+            .setDescription(
+              `${message.author.tag} has been ${action}. / ${message.author.tag} wurde ${action === 'banned' ? 'gebannt' : 'gekickt'}.\n` +
+              `Reason: Message in honeypot channel. / Grund: Nachricht im Sperrkanal.`
+            )
+            .setFooter({ text: 'VoidAttack · Anti-Bot System' })
+            .setTimestamp();
+          await message.channel.send({ embeds: [banEmbed] });
+        }
       } catch {}
       return;
     }
