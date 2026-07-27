@@ -209,12 +209,22 @@ module.exports = {
     if (config.antibotChannelId && message.channel.id === config.antibotChannelId) {
       try {
         await message.delete();
-        await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
+
+        let action = 'banned';
+        try {
+          await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
+        } catch {
+          await message.member.kick('Anti-Bot: Nachricht im Sperrkanal gesendet');
+          action = 'kicked';
+        }
+
         const banEmbed = new EmbedBuilder()
           .setColor(0x2F3136)
-          .setTitle('BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ')
+          .setTitle(action === 'banned'
+            ? 'BANNED — ANTI-BOT PROTECTION / GEBANNT — ANTI-BOT-SCHUTZ'
+            : 'KICKED — ANTI-BOT PROTECTION / GEKICKT — ANTI-BOT-SCHUTZ')
           .setDescription(
-            `${message.author.tag} has been banned. / ${message.author.tag} wurde gebannt.\n` +
+            `${message.author.tag} has been ${action}. / ${message.author.tag} wurde ${action === 'banned' ? 'gebannt' : 'gekickt'}.\n` +
             `Reason: Message in honeypot channel. / Grund: Nachricht im Sperrkanal.`
           )
           .setFooter({ text: 'VoidAttack · Anti-Bot System' })
