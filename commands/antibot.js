@@ -18,10 +18,10 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setColor(0x2F3136)
-      .setTitle('⚠️ DO NOT SEND MESSAGES IN THIS CHANNEL')
+      .setTitle('DO NOT SEND MESSAGES IN THIS CHANNEL')
       .setDescription(
         'This channel is used to catch spam bots.\n' +
-        'Any messages sent here will result in an **automatic ban**.'
+        'Any messages sent here will result in an automatic ban.'
       )
       .setFooter({ text: 'VoidAttack · Anti-Bot System' })
       .setTimestamp();
@@ -29,7 +29,7 @@ module.exports = {
     await channel.send({ embeds: [embed] });
 
     await interaction.reply({
-      content: `✅ Anti-bot channel set to ${channel}. Warning message sent.`,
+      content: `Anti-bot channel set to ${channel}.`,
       ephemeral: true,
     });
   },
