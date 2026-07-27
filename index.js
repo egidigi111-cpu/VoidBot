@@ -60,6 +60,10 @@ client.on('messageCreate', (message) => {
   interactionHandler.handleMessage(message);
 });
 
+// ── Audit Log (Nachrichten, Nickname, Avatar) ────────────────
+const auditLog = require('./utils/auditLog');
+auditLog.register(client);
+
 // ── Commands registrieren beim Start ────────────────
 client.once('ready', async () => {
   console.log(`✅ Eingeloggt als ${client.user.tag}`);

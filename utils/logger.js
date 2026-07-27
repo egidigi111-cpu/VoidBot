@@ -1,24 +1,15 @@
 const { EmbedBuilder } = require('discord.js');
-const configManager = require('./configManager');
+const configManager = require('../utils/configManager');
 
-async function log(client, { title, description, color = 0x5865F2, fields = [] }) {
-  const logChannelId = configManager.get('logChannelId');
-  if (!logChannelId) return;
-
-  const channel = client.channels.cache.get(logChannelId);
-  if (!channel) return;
-
-  const embed = new EmbedBuilder()
-    .setTitle(title)
-    .setDescription(description)
-    .setColor(color)
-    .setTimestamp();
-
-  if (fields.length > 0) {
-    embed.addFields(fields);
-  }
-
-  await channel.send({ embeds: [embed] });
+function getLogChannel(guild) {
+  const config = configManager.getAll();
+  if (!config.logChannelId) return null;
+  return guild.channels.cache.get(config.logChannelId) || null;
 }
 
-module.exports = { log };
+function truncate(str, max = 1024) {
+  if (!str) return '*Empty*';
+  return str.length > max ? str.slice(0, max) + '...' : str;
+}
+
+module.exports = { getLogChannel, truncate };
