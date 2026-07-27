@@ -205,6 +205,18 @@ module.exports = {
 
     const config = configManager.getAll();
 
+    // ── Anti-Bot Channel ────────────────
+    if (config.antibotChannelId && message.channel.id === config.antibotChannelId) {
+      try {
+        await message.delete();
+        await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
+        await message.channel.send({
+          content: `🔨 <@${message.author.id}> wurde gebannt: Anti-Bot-Schutz ausgelöst.`,
+        });
+      } catch {}
+      return;
+    }
+
     // ── Tags ────────────────
     if (message.content.startsWith('!')) {
       const tagName = message.content.slice(1).toLowerCase().trim();
