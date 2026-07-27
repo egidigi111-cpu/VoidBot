@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, EmbedBuilder } = require('discord.js');
 const configManager = require('../utils/configManager');
 
 module.exports = {
@@ -16,11 +16,24 @@ module.exports = {
 
     configManager.set('antibotChannelId', channel.id);
 
-    const warningMessage =
-      '🚫 **DO NOT SEND MESSAGES IN THIS CHANNEL**\n\n' +
-      'This channel is used to catch spam bots. Any messages sent here will result in a **softban**.';
+    const embed = new EmbedBuilder()
+      .setColor(0xED4245)
+      .setTitle('⛔ ZUTRITT VERBOTEN ⛔')
+      .setDescription(
+        '**Sende KEINE Nachrichten in diesem Kanal!**\n\n' +
+        'Dieser Kanal dient ausschließlich zum **Auffangen von Spam-Bots**. ' +
+        'Jede Nachricht, die hier gesendet wird, führt automatisch zu einem **softban**.\n\n' +
+        '───────────────────────\n' +
+        '⚠️ *Bei Verstoß wirst du umgehend gebannt.*\n' +
+        '───────────────────────'
+      )
+      .setThumbnail('https://i.imgur.com/G2VfO6h.png')
+      .setFooter({ text: 'VoidAttack · Anti-Bot System' })
+      .setTimestamp();
 
-    await channel.send({ content: warningMessage });
+    const dangerIcon = '🚨';
+
+    await channel.send({ content: dangerIcon, embeds: [embed] });
 
     await interaction.reply({
       content: `✅ Anti-Bot-Kanal wurde auf ${channel} gesetzt. Eine Warnnachricht wurde gesendet.`,

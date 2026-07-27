@@ -210,9 +210,14 @@ module.exports = {
       try {
         await message.delete();
         await message.member.ban({ reason: 'Anti-Bot: Nachricht im Sperrkanal gesendet' });
-        await message.channel.send({
-          content: `🔨 <@${message.author.id}> wurde gebannt: Anti-Bot-Schutz ausgelöst.`,
-        });
+        const banEmbed = new EmbedBuilder()
+          .setColor(0xED4245)
+          .setTitle('🔨 Anti-Bot-Schutz ausgelöst')
+          .setDescription(`**${message.author.tag}** wurde gebannt.\n\n📜 **Grund:** Nachricht im gesperrten Kanal gesendet.`)
+          .setThumbnail(message.author.displayAvatarURL())
+          .setFooter({ text: 'VoidAttack · Anti-Bot System' })
+          .setTimestamp();
+        await message.channel.send({ embeds: [banEmbed] });
       } catch {}
       return;
     }
