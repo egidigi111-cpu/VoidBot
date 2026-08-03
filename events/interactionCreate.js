@@ -298,9 +298,12 @@ module.exports = {
         if (num === expected) {
           config.countingLastNumber = num;
           configManager.writeConfig(config);
+          try {
+            await message.react('✅');
+          } catch {}
         } else {
           try {
-            await message.delete();
+            await message.react('❌');
             await message.channel.send({
               content: `❌ Falsch! Die nächste Zahl wäre **${expected}** gewesen.`,
             });

@@ -1,0 +1,6 @@
+.git
+node_modules
+.idea
+package-lock.json
+Thumbs.db
+.DS_Store

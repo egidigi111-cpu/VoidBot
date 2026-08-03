@@ -20,6 +20,6 @@ module.exports = {
     configManager.set('countingChannelId', channel.id);
     configManager.set('countingLastNumber', 0);
 
-    await interaction.reply({ content: `✅ Zählspiel eingrichtet in ${channel}\n\nNutze \`/counting_reset\` um den Zähler zurückzusetzen.`, ephemeral: true });
+    await interaction.reply({ content: `✅ Zählspiel eingrichtet in ${channel}\n\nNutze \`/counting_delete\` um das Zählspiel zu entfernen.`, ephemeral: true });
   },
 };
