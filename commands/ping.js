@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('ping')
-    .setDescription('Zeigt die Latenz des Bots an'),
+    .setDescription('Zeigt die Latenz des Bots an')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
   async execute(interaction) {
     const sent = await interaction.reply({ content: '📡 Pong!', fetchReply: true });
 

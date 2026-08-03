@@ -1,9 +1,10 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('dm')
     .setDescription('Sendet eine DM an einen Spieler')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addUserOption(option =>
       option.setName('user')
         .setDescription('Der Spieler')

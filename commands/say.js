@@ -1,9 +1,10 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('say')
     .setDescription('Lässt den Bot eine Nachricht senden')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addStringOption(option =>
       option.setName('nachricht')
         .setDescription('Die Nachricht, die der Bot senden soll')

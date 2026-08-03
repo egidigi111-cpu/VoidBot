@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('showip')
-    .setDescription('Zeigt die Server-IP und den Port an'),
+    .setDescription('Zeigt die Server-IP und den Port an')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   async execute(interaction) {
     if (!interaction.member.permissions.has('Administrator')) {
       return interaction.reply({ content: '❌ Nur Admins können diesen Befehl nutzen.', ephemeral: true });

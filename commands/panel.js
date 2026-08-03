@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('panel')
-    .setDescription('Sendet das Ticket-Panel in den aktuellen Kanal'),
+    .setDescription('Sendet das Ticket-Panel in den aktuellen Kanal')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   async execute(interaction) {
     if (!interaction.member.permissions.has('Administrator')) {
       return interaction.reply({ content: '❌ Nur Admins können das Panel senden.', ephemeral: true });

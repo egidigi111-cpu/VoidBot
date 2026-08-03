@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField, PermissionFlagsBits } = require('discord.js');
 
 function getSubcommands(command) {
   const subs = [];
@@ -45,7 +45,8 @@ function canUse(command, member) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('help')
-    .setDescription('Zeigt alle Commands und was sie tun'),
+    .setDescription('Zeigt alle Commands und was sie tun')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
   async execute(interaction) {
     const commands = [...interaction.client.commands.values()]

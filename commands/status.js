@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -13,7 +13,8 @@ const config = {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('status')
-    .setDescription('Zeigt den aktuellen Server-Status'),
+    .setDescription('Zeigt den aktuellen Server-Status')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
   async execute(interaction) {
     let current = 'online';
     try {

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -54,6 +54,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('invites')
     .setDescription('Invite-Tracker System')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addSubcommand(sub =>
       sub.setName('check')
         .setDescription('Zeigt deine Einladungen an')
