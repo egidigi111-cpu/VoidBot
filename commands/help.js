@@ -35,6 +35,13 @@ function getCategory(command) {
   return 'admin';
 }
 
+function canUse(command, member) {
+  const raw = command.data.default_member_permissions;
+  if (!raw) return true;
+  const bits = new PermissionsBitField(BigInt(raw));
+  return member.permissions.has(bits);
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('help')
@@ -42,7 +49,7 @@ module.exports = {
 
   async execute(interaction) {
     const commands = [...interaction.client.commands.values()]
-      .filter(c => c.data && c.data.name !== 'help')
+      .filter(c => c.data && c.data.name !== 'help' && canUse(c, interaction.member))
       .sort((a, b) => a.data.name.localeCompare(b.data.name));
 
     const groups = { public: [], moderation: [], admin: [] };
